@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Telegram 授权回调</title>
+    <style>
+        /* Basic styling for the processing page */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: #374151; 
+        }
+        .container { 
+            text-align: center; 
+        }
+        .spinner {
+          border: 4px solid rgba(0, 0, 0, 0.1);
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border-left-color: #3b82f6; /* Blue color for spinner */
+          animation: spin 1s ease infinite;
+          margin: 0 auto 20px;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="spinner"></div>
+        <p>正在处理授权，请稍候...</p>
+    </div>
+    <script>
+        window.onload = function() {
+            try {
+                // Get data from the URL hash provided by Telegram
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const tgAuthData = {};
+                const requiredKeys = ['id', 'first_name', 'auth_date', 'hash'];
+                let hasAllKeys = true;
+
+                requiredKeys.forEach(key => {
+                    const value = hashParams.get(key);
+                    if (value) {
+                        tgAuthData[key] = value;
+                    } else {
+                        hasAllKeys = false;
+                    }
+                });
+
+                // Get optional parameters
+                tgAuthData.username = hashParams.get('username');
+                tgAuthData.photo_url = hashParams.get('photo_url');
+                tgAuthData.last_name = hashParams.get('last_name');
+
+                if (hasAllKeys) {
+                    // If auth data is valid, store it in localStorage for the main page to use
+                    localStorage.setItem('telegram_auth_success', JSON.stringify(tgAuthData));
+                    // After a new binding, the user must re-activate, so remove any old activation status
+                    localStorage.removeItem('telegram_activated');
+                } else {
+                    // Log an error if required parameters are missing
+                    console.error("Telegram authentication failed: Missing required parameters.");
+                }
+            } catch (error) {
+                console.error("Error processing callback:", error);
+            } finally {
+                // Regardless of success or failure, redirect back to the security center page
+                // **IMPORTANT**: Ensure 'security-center.html' is the correct filename for your main page.
+                // You might need to change this path depending on your file structure.
+                window.location.href = './security-center.html';
+            }
+        };
+    </script>
+</body>
+</html>
