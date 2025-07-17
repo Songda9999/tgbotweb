@@ -138,36 +138,36 @@
             
             let displayName = '';
             if (userData) {
-                displayName = userData.username ? `@${userData.username}` : `${userData.first_name}${userData.last_name ? ' ' + userData.last_name : ''}`;
+                displayName = userData.username ? @${userData.username} : ${userData.first_name}${userData.last_name ? ' ' + userData.last_name : ''};
             }
             
-            const baseHTML = `
+            const baseHTML = 
                 <i data-feather="send" class="w-6 h-6 text-gray-500"></i>
                 <div class="ml-4 flex-grow">
                     <h3 class="font-medium text-gray-800">Telegram 验证</h3>
                     <p class="text-sm text-gray-500 mt-1">用于接收实时通知和提现验证</p>
                 </div>
-            `;
+            ;
 
             switch (state) {
                 case 'unbound':
-                    statusHTML = `${baseHTML}<div class="flex items-center text-orange-500 text-sm font-medium mx-6"><i data-feather="alert-circle" class="w-4 h-4 mr-2"></i><span>未设置</span></div><button id="telegram-bind-btn" class="action-btn">绑定</button>`;
+                    statusHTML = ${baseHTML}<div class="flex items-center text-orange-500 text-sm font-medium mx-6"><i data-feather="alert-circle" class="w-4 h-4 mr-2"></i><span>未设置</span></div><button id="telegram-bind-btn" class="action-btn">绑定</button>;
                     break;
                 case 'needs-activation':
-                    statusHTML = `${baseHTML}<div class="flex items-center text-yellow-500 text-sm font-medium mx-6"><i data-feather="alert-circle" class="w-4 h-4 mr-2"></i><span>待激活</span></div><button id="telegram-activate-btn" class="action-btn">激活</button>`;
+                    statusHTML = ${baseHTML}<div class="flex items-center text-yellow-500 text-sm font-medium mx-6"><i data-feather="alert-circle" class="w-4 h-4 mr-2"></i><span>待激活</span></div><button id="telegram-activate-btn" class="action-btn">激活</button>;
                     if (showActivationModal) {
                         const activationAction = () => {
                             localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
-                            window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
+                            window.open(https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate, '_blank');
                         };
                         showModal('需要激活', '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。', '前往激活', '稍后', activationAction);
                     }
                     break;
                 case 'activated':
-                    statusHTML = `${baseHTML}<div class="flex items-center text-green-600 text-sm font-medium mx-6"><i data-feather="check-circle" class="w-4 h-4 mr-2"></i><span>${displayName}</span></div><button id="telegram-unlink-btn" class="action-btn">解绑</button>`;
+                    statusHTML = ${baseHTML}<div class="flex items-center text-green-600 text-sm font-medium mx-6"><i data-feather="check-circle" class="w-4 h-4 mr-2"></i><span>${displayName}</span></div><button id="telegram-unlink-btn" class="action-btn">解绑</button>;
                     break;
                 default:
-                    statusHTML = `${baseHTML}<div class="spinner"></div>`;
+                    statusHTML = ${baseHTML}<div class="spinner"></div>;
                     break;
             }
             telegramRow.innerHTML = statusHTML;
@@ -182,7 +182,7 @@
             const activateBtn = document.getElementById('telegram-activate-btn');
             if (activateBtn) activateBtn.addEventListener('click', () => {
                 localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
-                window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
+                window.open(https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate, '_blank');
             });
 
             const unlinkBtn = document.getElementById('telegram-unlink-btn');
@@ -194,11 +194,11 @@
           const origin = encodeURIComponent(window.location.origin);
           const currentPath = window.location.pathname;
           const directoryPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-          const returnToUrl = `${window.location.origin}${directoryPath}/callback.html`;
+          const returnToUrl = ${window.location.origin}${directoryPath}/callback.html;
           const returnTo = encodeURIComponent(returnToUrl);
-          const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
+          const authUrl = https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()};
           
-          // **CRITICAL FIX**: Removed 'noopener' and 'noreferrer' to allow communication.
+          // **CRITICAL FIX**: Removed 'noopener' and 'noreferrer' to ensure window.opener works.
           window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600');
         }
 
