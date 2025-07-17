@@ -4,17 +4,8 @@
     <meta charset="UTF-8">
     <title>Telegram 授权回调</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f9fafb; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            margin: 0; 
-            color: #374151;
-            text-align: center;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #374151; text-align: center; }
+        .error { color: #ef4444; }
     </style>
 </head>
 <body>
@@ -41,28 +32,26 @@
                 });
 
                 if (hasAllKeys) {
-                    // Prepare success response
                     response = { success: true, userData: tgAuthData };
                     document.body.innerHTML = '<div><h2>授权成功！</h2><p>此窗口将自动关闭。</p></div>';
                 } else {
                     response.error = "缺少必要参数，授权失败。";
-                    console.error("Telegram authentication failed: Missing required parameters.");
-                    document.body.innerHTML = `<div><h2>授权失败</h2><p>${response.error}</p></div>`;
+                    throw new Error(response.error);
                 }
             } catch (error) {
-                response.error = "处理授权信息时发生错误。";
-                console.error("Error processing callback:", error);
-                document.body.innerHTML = `<div><h2>处理出错</h2><p>${response.error}</p></div>`;
+                response.error = error.message || "处理授权信息时发生错误。";
+                console.error("Callback Error:", response.error);
+                document.body.innerHTML = `<div><h2 class="error">授权失败</h2><p>${response.error}</p></div>`;
             } finally {
-                // Use the "messenger" to send data back to the main window that opened this popup
+                // **CRITICAL FIX**: Check if the messenger function exists on the opener window.
                 if (window.opener && window.opener.handleTelegramAuth) {
                     window.opener.handleTelegramAuth(response);
+                    setTimeout(() => window.close(), 1500);
+                } else {
+                    // If communication fails, stay open and show an error.
+                    console.error("无法与主页面通信。'window.opener' 不可用或 'handleTelegramAuth' 函数未找到。");
+                    document.body.innerHTML = '<div><h2 class="error">通信失败</h2><p>无法将授权结果返回给主页面。请不要直接访问此页面，并确保您的浏览器没有禁用弹窗通信。</p></div>';
                 }
-                
-                // Close the popup window after a short delay.
-                setTimeout(() => {
-                    window.close();
-                }, 1500);
             }
         };
     </script>
