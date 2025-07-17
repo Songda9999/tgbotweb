@@ -73,10 +73,10 @@
             } catch (error) {
                 console.error("Error processing callback:", error);
             } finally {
-                // Regardless of success or failure, redirect back to the security center page
-                // **IMPORTANT**: Ensure 'security-center.html' is the correct filename for your main page.
-                // You might need to change this path depending on your file structure.
-                window.location.href = './security-center.html';
+                // Regardless of success or failure, redirect back to the main page.
+                // **IMPORTANT**: This path MUST match the filename of your main security center page.
+                // For example, if your main file is 'security.html', change this to './security.html'.
+                window.location.href = './index.html';
             }
         };
     </script>
