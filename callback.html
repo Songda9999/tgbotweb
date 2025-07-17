@@ -1,59 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Telegram Authentication</title>
+    <title>Telegram 授权回调</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f9fafb; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+            color: #374151;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <p id="message" style="font-family: sans-serif; padding: 20px; text-align: center; font-size: 16px;">正在处理授权，请稍候...</p>
+    <div>
+        <h2>正在处理授权...</h2>
+        <p>此窗口将自动关闭。</p>
+    </div>
     <script>
-        const messageElement = document.getElementById('message');
+        window.onload = function() {
+            let response = { success: false, error: '未知错误' };
+            try {
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const tgAuthData = {};
+                const requiredKeys = ['id', 'first_name', 'auth_date', 'hash'];
+                let hasAllKeys = true;
 
-        try {
-            const hash = window.location.hash.substring(1);
-            if (!hash) {
-                throw new Error("URL 中缺少授权信息。此页面不能被直接访问。");
-            }
+                requiredKeys.forEach(key => {
+                    const value = hashParams.get(key);
+                    if (value) {
+                        tgAuthData[key] = value;
+                    } else {
+                        hasAllKeys = false;
+                    }
+                });
 
-            const params = new URLSearchParams(hash);
-            const tgAuthResult = params.get('tgAuthResult');
-            let user = null;
-
-            if (tgAuthResult) {
-                const decodedJsonString = atob(tgAuthResult);
-                user = JSON.parse(decodedJsonString);
-            } else if (params.has('id') && params.has('hash')) {
-                user = {};
-                for (const [key, value] of params.entries()) {
-                    user[key] = value;
+                if (hasAllKeys) {
+                    // Prepare success response
+                    response = { success: true, userData: tgAuthData };
+                    document.body.innerHTML = '<div><h2>授权成功！</h2><p>此窗口将自动关闭。</p></div>';
+                } else {
+                    response.error = "缺少必要参数，授权失败。";
+                    console.error("Telegram authentication failed: Missing required parameters.");
+                    document.body.innerHTML = `<div><h2>授权失败</h2><p>${response.error}</p></div>`;
                 }
-            }
-
-            if (user && user.id) {
-                // 1. 将成功信号和用户数据存入 localStorage
-                localStorage.setItem('telegram_auth_success', JSON.stringify(user));
+            } catch (error) {
+                response.error = "处理授权信息时发生错误。";
+                console.error("Error processing callback:", error);
+                document.body.innerHTML = `<div><h2>处理出错</h2><p>${response.error}</p></div>`;
+            } finally {
+                // Use the "messenger" to send data back to the main window that opened this popup
+                if (window.opener && window.opener.handleTelegramAuth) {
+                    window.opener.handleTelegramAuth(response);
+                }
                 
-                // 2. 【已修改】准备带成功标记的新 URL
-                // 注意：这里我们假设主页是 index.html
-                const mainPageUrl = new URL('index.html', window.location.href);
-                mainPageUrl.searchParams.set('tg_bound', 'success'); // 添加成功标记
-
-                // 3. 跳转回带标记的主页
-                window.location.href = mainPageUrl.href;
-            } else {
-                throw new Error("未找到授权用户信息");
+                // Close the popup window after a short delay.
+                setTimeout(() => {
+                    window.close();
+                }, 1500);
             }
-
-        } catch (error) {
-            console.error('Telegram 授权处理失败:', error);
-            messageElement.innerHTML = `
-              <strong style="color: red;">授权处理失败</strong><br><br>
-              原因: ${error.message}<br><br>
-              请关闭此窗口，然后返回主页面重试。
-            `;
-            // 如果失败，直接跳回不带标记的主页
-            window.location.href = 'index.html';
-        }
+        };
     </script>
 </body>
 </html>
