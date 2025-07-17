@@ -275,190 +275,204 @@
   </div>
 
   <script type="text/javascript">
-    // --- Icon Initialization ---
-    feather.replace();
+    // OPTIMIZED: Wrap all code in a DOMContentLoaded event listener
+    // This ensures the script runs after the entire page is loaded and ready.
+    // It also encapsulates the code, preventing variables from leaking into the global scope.
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Icon Initialization ---
+        feather.replace();
 
-    // =================================================================
-    // Configuration
-    // =================================================================
-    const BOT_USERNAME = "Songdacheckbalance_bot"; 
-    // =================================================================
+        // =================================================================
+        // Configuration
+        // =================================================================
+        const BOT_USERNAME = "Songdacheckbalance_bot"; 
+        // =================================================================
 
-    // Get DOM Elements
-    const telegramSection = document.getElementById('telegram-section');
-    const telegramRow = document.getElementById('telegram-row');
-    const toast = document.getElementById('toast');
-    const modal = document.getElementById('custom-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message');
-    const modalConfirmBtn = document.getElementById('modal-confirm-btn');
-    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        // Get DOM Elements
+        const telegramSection = document.getElementById('telegram-section');
+        const telegramRow = document.getElementById('telegram-row');
+        const toast = document.getElementById('toast');
+        const modal = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
 
-    // --- Modal Logic ---
-    let confirmCallback = null;
+        // --- Modal Logic ---
+        let confirmCallback = null;
 
-    function showModal(title, message, confirmText = '确认', cancelText = '取消', onConfirm) {
-        modalTitle.textContent = title;
-        modalMessage.textContent = message;
-        modalConfirmBtn.textContent = confirmText;
-        modalCancelBtn.textContent = cancelText;
-        confirmCallback = onConfirm;
-        modal.classList.add('show');
-    }
-
-    function hideModal() {
-        modal.classList.remove('show');
-        confirmCallback = null;
-    }
-
-    modalConfirmBtn.addEventListener('click', () => {
-        if (typeof confirmCallback === 'function') {
-            confirmCallback();
-        }
-        hideModal();
-    });
-
-    modalCancelBtn.addEventListener('click', hideModal);
-
-
-    // --- Toast Logic ---
-    function showToast(message) {
-        toast.textContent = message;
-        toast.classList.add('show');
-        setTimeout(() => { toast.classList.remove('show'); }, 2500);
-    }
-
-    // --- Main Application Logic ---
-    function setTelegramUIState(state, userData = null) {
-        let statusHTML = '';
-        telegramRow.onclick = null; // Clear previous click event
-
-        let displayName = '';
-        if (userData) {
-            displayName = userData.username ? `@${userData.username}` : `${userData.first_name}${userData.last_name ? ' ' + userData.last_name : ''}`;
-        }
-        
-        switch (state) {
-            case 'unbound':
-                statusHTML = `
-                    <div class="flex items-center text-red-500 text-sm font-medium">
-                         <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
-                         <span>未绑定</span>
-                    </div>
-                    <button class="action-btn action-btn-primary">绑定</button>
-                `;
-                telegramRow.onclick = bindTelegram;
-                break;
-            case 'needs-activation':
-                statusHTML = `
-                     <div class="flex items-center text-yellow-500 text-sm font-medium">
-                         <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
-                         <span>待激活</span>
-                    </div>
-                    <button class="action-btn action-btn-primary">激活</button>
-                `;
-                const activationAction = () => {
-                    const activationUrl = `https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`;
-                    window.open(activationUrl, '_blank');
-                    completeActivation();
-                };
-                telegramRow.onclick = activationAction;
-                showModal(
-                    '需要激活', 
-                    '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。',
-                    '前往激活',
-                    '稍后',
-                    activationAction
-                );
-                break;
-            case 'activated':
-                statusHTML = `
-                    <div class="flex items-center text-green-600 text-sm font-medium">
-                         <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                         <span>${displayName}</span>
-                    </div>
-                    <button class="action-btn">解绑</button>
-                `;
-                telegramRow.onclick = unlinkTelegram;
-                break;
-            case 'loading':
-                statusHTML = `<div class="spinner"></div>`;
-                break;
-        }
-        telegramSection.innerHTML = statusHTML;
-        feather.replace(); // Re-initialize icons after dynamic update
-    }
-
-    function bindTelegram() {
-      const botId = '8087175912';
-      const origin = encodeURIComponent(window.location.origin);
-      
-      const returnToUrl = window.location.href.split('#')[0];
-      const returnTo = encodeURIComponent(returnToUrl);
-
-      const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
-      window.location.href = authUrl;
-    }
-
-    function checkAuthStatus() {
-        const urlParams = new URLSearchParams(window.location.hash.substring(1));
-        if (urlParams.has('id') && urlParams.has('hash')) {
-            const tgAuthData = Object.fromEntries(urlParams.entries());
-            localStorage.setItem('telegram_auth_success', JSON.stringify(tgAuthData));
-            localStorage.removeItem('telegram_activated');
-            window.location.hash = ''; // Clean URL
-            // No return needed, fall through to check localStorage
+        function showModal(title, message, confirmText = '确认', cancelText = '取消', onConfirm) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalConfirmBtn.textContent = confirmText;
+            modalCancelBtn.textContent = cancelText;
+            confirmCallback = onConfirm;
+            modal.classList.add('show');
         }
 
-        const successData = localStorage.getItem('telegram_auth_success');
-        const isActivated = localStorage.getItem('telegram_activated');
+        function hideModal() {
+            modal.classList.remove('show');
+            confirmCallback = null;
+        }
 
-        if (successData) {
-            const userData = JSON.parse(successData);
-            if (isActivated) {
-                setTelegramUIState('activated', userData);
+        modalConfirmBtn.addEventListener('click', () => {
+            if (typeof confirmCallback === 'function') {
+                confirmCallback();
+            }
+            hideModal();
+        });
+
+        modalCancelBtn.addEventListener('click', hideModal);
+
+
+        // --- Toast Logic ---
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        // --- Main Application Logic ---
+        function setTelegramUIState(state, userData = null, forceShowModal = false) {
+            let statusHTML = '';
+            telegramRow.onclick = null; // Clear previous click event
+
+            let displayName = '';
+            if (userData) {
+                displayName = userData.username ? `@${userData.username}` : `${userData.first_name}${userData.last_name ? ' ' + userData.last_name : ''}`;
+            }
+            
+            switch (state) {
+                case 'unbound':
+                    statusHTML = `
+                        <div class="flex items-center text-red-500 text-sm font-medium">
+                             <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
+                             <span>未绑定</span>
+                        </div>
+                        <button class="action-btn action-btn-primary">绑定</button>
+                    `;
+                    telegramRow.onclick = bindTelegram;
+                    break;
+                case 'needs-activation':
+                    statusHTML = `
+                         <div class="flex items-center text-yellow-500 text-sm font-medium">
+                             <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
+                             <span>待激活</span>
+                        </div>
+                        <button class="action-btn action-btn-primary">激活</button>
+                    `;
+                    const activationAction = () => {
+                        const activationUrl = `https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`;
+                        window.open(activationUrl, '_blank');
+                        completeActivation();
+                    };
+                    telegramRow.onclick = activationAction;
+                    
+                    // OPTIMIZED: Only show the activation modal automatically right after returning from the callback.
+                    if (forceShowModal) {
+                        showModal(
+                            '需要激活', 
+                            '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。',
+                            '前往激活',
+                            '稍后',
+                            activationAction
+                        );
+                    }
+                    break;
+                case 'activated':
+                    statusHTML = `
+                        <div class="flex items-center text-green-600 text-sm font-medium">
+                             <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
+                             <span>${displayName}</span>
+                        </div>
+                        <button class="action-btn">解绑</button>
+                    `;
+                    telegramRow.onclick = unlinkTelegram;
+                    break;
+                case 'loading':
+                    statusHTML = `<div class="spinner"></div>`;
+                    break;
+            }
+            telegramSection.innerHTML = statusHTML;
+            feather.replace(); // Re-initialize icons after dynamic update
+        }
+
+        function bindTelegram() {
+          const botId = '8087175912';
+          const origin = encodeURIComponent(window.location.origin);
+          
+          // OPTIMIZED: Point to the dedicated callback.html file for a more robust flow.
+          const currentPath = window.location.pathname;
+          const directoryPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+          const returnToUrl = `${window.location.origin}${directoryPath}/callback.html`;
+          const returnTo = encodeURIComponent(returnToUrl);
+
+          const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
+          window.location.href = authUrl;
+        }
+
+        // OPTIMIZED: Simplified logic that works with callback.html
+        function checkAuthStatus() {
+            // Check for the flag from callback.html
+            const justReturnedFromAuth = window.location.hash === '#auth_callback=true';
+            if (justReturnedFromAuth) {
+                // Clean the URL so it doesn't interfere with normal reloads
+                history.replaceState(null, document.title, window.location.pathname + window.location.search);
+            }
+
+            const successData = localStorage.getItem('telegram_auth_success');
+            const isActivated = localStorage.getItem('telegram_activated');
+
+            if (successData) {
+                const userData = JSON.parse(successData);
+                if (isActivated) {
+                    setTelegramUIState('activated', userData);
+                } else {
+                    // Pass the flag to the UI function to decide if the modal should be shown.
+                    setTelegramUIState('needs-activation', userData, justReturnedFromAuth);
+                }
             } else {
-                setTelegramUIState('needs-activation', userData);
-            }
-        } else {
-            setTelegramUIState('unbound');
-        }
-    }
-
-    function completeActivation() {
-        localStorage.setItem('telegram_activated', 'true');
-        const successData = localStorage.getItem('telegram_auth_success');
-        if (successData) {
-            const userData = JSON.parse(successData);
-            setTimeout(() => {
-                setTelegramUIState('activated', userData);
-                showToast('激活成功！');
-            }, 500);
-        }
-    }
-
-    function unlinkTelegram() {
-        showModal(
-            '解除关联', 
-            '您确定要解除与 Telegram 账户的关联吗？', 
-            '确定解绑', 
-            '取消',
-            () => {
-                localStorage.removeItem('telegram_auth_success');
-                localStorage.removeItem('telegram_activated');
                 setTelegramUIState('unbound');
-                showToast('已解除关联');
             }
-        );
-    }
-
-    document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            checkAuthStatus();
         }
-    });
 
-    window.addEventListener('load', checkAuthStatus);
+        function completeActivation() {
+            localStorage.setItem('telegram_activated', 'true');
+            const successData = localStorage.getItem('telegram_auth_success');
+            if (successData) {
+                const userData = JSON.parse(successData);
+                setTimeout(() => {
+                    setTelegramUIState('activated', userData);
+                    showToast('激活成功！');
+                }, 500);
+            }
+        }
+
+        function unlinkTelegram() {
+            showModal(
+                '解除关联', 
+                '您确定要解除与 Telegram 账户的关联吗？', 
+                '确定解绑', 
+                '取消',
+                () => {
+                    localStorage.removeItem('telegram_auth_success');
+                    localStorage.removeItem('telegram_activated');
+                    setTelegramUIState('unbound');
+                    showToast('已解除关联');
+                }
+            );
+        }
+
+        // Check status when the tab becomes visible again (e.g., after user activates on Telegram and returns)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                checkAuthStatus();
+            }
+        });
+
+        // Initial check on page load
+        checkAuthStatus();
+    });
   </script>
 
 </body>
