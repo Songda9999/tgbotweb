@@ -73,10 +73,11 @@
             } catch (error) {
                 console.error("Error processing callback:", error);
             } finally {
-                // Regardless of success or failure, redirect back to the main page.
-                // **IMPORTANT**: This path MUST match the filename of your main security center page.
-                // For example, if your main file is 'security.html', change this to './security.html'.
-                window.location.href = './index.html';
+                // Add a hash to the URL to signal that a callback has just completed.
+                // This helps the main page know it needs to re-check the auth status.
+                // **IMPORTANT**: Make sure './index.html' is the correct path to your main page.
+                // If your main file is named 'security-center.html', change this path.
+                window.location.href = './index.html#auth_callback=true';
             }
         };
     </script>
