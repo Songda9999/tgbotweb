@@ -16,7 +16,7 @@
     /* Custom Styles */
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f9fafb; /* A slightly different gray to match screenshot */
+      background-color: #f9fafb;
     }
     /* Loading Spinner */
     .spinner {
@@ -87,24 +87,24 @@
     /* Action button style */
     .action-btn {
         padding: 6px 16px;
-        border: 1px solid #e5e7eb; /* gray-200 */
+        border: 1px solid #e5e7eb;
         border-radius: 6px;
         font-size: 0.875rem;
         font-weight: 500;
-        color: #374151; /* gray-700 */
+        color: #374151;
         background-color: white;
         transition: background-color 0.2s;
     }
     .action-btn:hover {
-        background-color: #f9fafb; /* gray-50 */
+        background-color: #f9fafb;
     }
     .action-btn-primary {
-        background-color: #eff6ff; /* blue-50 */
-        color: #2563eb; /* blue-600 */
-        border-color: #dbeafe; /* blue-100 */
+        background-color: #eff6ff;
+        color: #2563eb;
+        border-color: #dbeafe;
     }
      .action-btn-primary:hover {
-        background-color: #dbeafe; /* blue-100 */
+        background-color: #dbeafe;
     }
   </style>
 </head>
@@ -275,8 +275,6 @@
   </div>
 
   <script type="text/javascript">
-    // This script runs after the entire page is loaded and ready.
-    // It encapsulates the code, preventing variables from leaking into the global scope.
     document.addEventListener('DOMContentLoaded', () => {
         // --- Icon Initialization ---
         feather.replace();
@@ -285,9 +283,13 @@
         // Configuration
         // =================================================================
         const BOT_USERNAME = "Songdacheckbalance_bot";
-        // =================================================================
+        const AUTH_SUCCESS_KEY = 'telegram_auth_success'; // Temporary key from callback
+        const AUTH_DATA_KEY = 'telegram_auth_data';       // Permanent key for user data
+        const ACTIVATED_KEY = 'telegram_activated';       // Activation flag
 
+        // =================================================================
         // Get DOM Elements
+        // =================================================================
         const telegramSection = document.getElementById('telegram-section');
         const telegramRow = document.getElementById('telegram-row');
         const toast = document.getElementById('toast');
@@ -297,7 +299,9 @@
         const modalConfirmBtn = document.getElementById('modal-confirm-btn');
         const modalCancelBtn = document.getElementById('modal-cancel-btn');
 
-        // --- Modal Logic ---
+        // =================================================================
+        // Modal & Toast Logic (UI Helpers)
+        // =================================================================
         let confirmCallback = null;
 
         function showModal(title, message, confirmText = '确认', cancelText = '取消', onConfirm) {
@@ -323,18 +327,19 @@
 
         modalCancelBtn.addEventListener('click', hideModal);
 
-
-        // --- Toast Logic ---
         function showToast(message) {
             toast.textContent = message;
             toast.classList.add('show');
             setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
 
-        // --- Main Application Logic ---
-        function setTelegramUIState(state, userData = null) {
+        // =================================================================
+        // Core Application Logic
+        // =================================================================
+
+        function setTelegramUIState(state, userData = null, showActivationModal = false) {
             let statusHTML = '';
-            telegramRow.onclick = null; // Clear previous click event
+            telegramRow.onclick = null;
 
             let displayName = '';
             if (userData) {
@@ -343,9 +348,7 @@
             
             switch (state) {
                 case 'unbound':
-                    statusHTML = `
-                        <button class="action-btn action-btn-primary">绑定</button>
-                    `;
+                    statusHTML = `<button class="action-btn action-btn-primary">绑定</button>`;
                     telegramRow.onclick = bindTelegram;
                     break;
                 case 'needs-activation':
@@ -357,21 +360,19 @@
                         <button class="action-btn action-btn-primary">激活</button>
                     `;
                     const activationAction = () => {
-                        const activationUrl = `https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`;
-                        window.open(activationUrl, '_blank');
-                        completeActivation();
+                        window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
                     };
                     telegramRow.onclick = activationAction;
                     
-                    // Show the activation modal automatically after binding
-                    showModal(
-                        '需要激活',
-                        '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。',
-                        '前往激活',
-                        '稍后',
-                        activationAction
-                    );
-                    
+                    if (showActivationModal) {
+                        showModal(
+                            '需要激活',
+                            '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。',
+                            '前往激活',
+                            '稍后',
+                            activationAction
+                        );
+                    }
                     break;
                 case 'activated':
                     statusHTML = `
@@ -388,7 +389,7 @@
                     break;
             }
             telegramSection.innerHTML = statusHTML;
-            feather.replace(); // Re-initialize icons after dynamic update
+            feather.replace();
         }
 
         function bindTelegram() {
@@ -402,46 +403,45 @@
 
           const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
           
-          // Open the auth URL in a popup window
-          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600');
+          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600,noopener,noreferrer');
         }
 
-        function checkAuthStatus(isInitialLoad = false) {
-            const successData = localStorage.getItem('telegram_auth_success');
-            const isActivated = localStorage.getItem('telegram_activated');
+        function checkAuthStatus() {
+            // Step 1: Check for temporary data from the popup.
+            const tempAuthDataString = localStorage.getItem(AUTH_SUCCESS_KEY);
+            if (tempAuthDataString) {
+                const userData = JSON.parse(tempAuthDataString);
+                
+                localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(userData));
+                localStorage.removeItem(ACTIVATED_KEY);
+                localStorage.removeItem(AUTH_SUCCESS_KEY);
 
-            if (successData) {
-                const userData = JSON.parse(successData);
+                setTelegramUIState('needs-activation', userData, true);
+                return;
+            }
+
+            // Step 2: Check for permanent user data.
+            const permanentAuthDataString = localStorage.getItem(AUTH_DATA_KEY);
+            if (permanentAuthDataString) {
+                const userData = JSON.parse(permanentAuthDataString);
+                const isActivated = localStorage.getItem(ACTIVATED_KEY) === 'true';
+
                 if (isActivated) {
                     setTelegramUIState('activated', userData);
                 } else {
-                    // If it's not the initial page load, it means the user just came back
-                    // and the status changed, so we show the modal.
-                    setTelegramUIState('needs-activation', userData);
+                    setTelegramUIState('needs-activation', userData, false);
                 }
-                 // After processing the new auth data, remove it from storage
-                 // so the modal doesn't pop up on every single page refresh.
-                localStorage.removeItem('telegram_auth_success');
-            } else {
-                setTelegramUIState('unbound');
+                return;
             }
+
+            // Step 3: If no data is found, user is unbound.
+            setTelegramUIState('unbound');
         }
 
         function completeActivation() {
-            localStorage.setItem('telegram_activated', 'true');
-            // We need to re-read the user data to display it correctly
-            const successData = localStorage.getItem('telegram_auth_data_for_activation');
-            if (successData) {
-                const userData = JSON.parse(successData);
-                 setTimeout(() => {
-                    setTelegramUIState('activated', userData);
-                    showToast('激活成功！');
-                }, 500);
-                 localStorage.removeItem('telegram_auth_data_for_activation');
-            } else {
-                // Fallback in case the data is missing
-                checkAuthStatus();
-            }
+            localStorage.setItem(ACTIVATED_KEY, 'true');
+            showToast('激活成功！');
+            checkAuthStatus();
         }
 
         function unlinkTelegram() {
@@ -451,86 +451,37 @@
                 '确定解绑',
                 '取消',
                 () => {
-                    localStorage.removeItem('telegram_activated');
-                    localStorage.removeItem('telegram_auth_data_for_activation');
-                    setTelegramUIState('unbound');
+                    localStorage.removeItem(AUTH_DATA_KEY);
+                    localStorage.removeItem(ACTIVATED_KEY);
+                    checkAuthStatus(); // Re-check to update UI to unbound
                     showToast('已解除关联');
                 }
             );
         }
 
-        // This function is the new core of the logic.
-        // It's called when the user returns to this tab.
-        function handlePageFocus() {
-            const successData = localStorage.getItem('telegram_auth_success');
-            if (successData) {
-                // New data found, process it.
-                checkAuthStatus();
-            }
-        }
-
-        // When the user comes back to this window/tab, check for new login data.
-        window.addEventListener('focus', handlePageFocus);
+        // =================================================================
+        // Event Listeners
+        // =================================================================
+        window.addEventListener('focus', checkAuthStatus);
         
-        // This is a special handler for when the user activates and comes back.
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                const isActivated = localStorage.getItem('telegram_activated');
-                const userDataForActivation = localStorage.getItem('telegram_auth_data_for_activation');
-                if(isActivated && userDataForActivation){
+                // When user activates in Telegram and comes back, this will trigger.
+                // We check if the permanent data exists, and if the activated flag is now set.
+                const permanentData = localStorage.getItem(AUTH_DATA_KEY);
+                if(permanentData && localStorage.getItem(ACTIVATED_KEY) !== 'true') {
+                    // This is a simple trick: we assume if the user comes back to the visible tab,
+                    // they have likely completed the action. We can then mark it as activated.
+                    // A more robust solution would involve server-side validation.
                     completeActivation();
+                } else {
+                    checkAuthStatus();
                 }
             }
         });
 
-        // Initial check on page load
-        // We pass 'true' to prevent the modal from showing on a simple refresh.
-        checkAuthStatus(true);
-        
-        // A new function to handle the transition from 'needs-activation' to 'activated'
-        function completeActivation() {
-            localStorage.setItem('telegram_activated', 'true');
-            const successData = localStorage.getItem('telegram_auth_data_for_activation');
-            if (successData) {
-                const userData = JSON.parse(successData);
-                setTimeout(() => {
-                    setTelegramUIState('activated', userData);
-                    showToast('激活成功！');
-                }, 500);
-                localStorage.removeItem('telegram_auth_data_for_activation');
-            } else {
-                // If the temp data is gone for some reason, just re-check everything.
-                checkAuthStatus();
-            }
-        }
-
-        // Modify the main status check function
-        function checkAuthStatus() {
-            const successData = localStorage.getItem('telegram_auth_success');
-            const isActivated = localStorage.getItem('telegram_activated');
-            const permanentUserData = localStorage.getItem('telegram_auth_data_for_activation');
-            
-            if (successData) {
-                // This is temporary data from the popup.
-                // Process it, then move it to a more permanent key and delete the temp one.
-                const userData = JSON.parse(successData);
-                localStorage.setItem('telegram_auth_data_for_activation', JSON.stringify(userData));
-                localStorage.removeItem('telegram_auth_success'); // Clean up temp data
-                setTelegramUIState('needs-activation', userData);
-            } else if (permanentUserData) {
-                // The user has bound but not activated yet.
-                const userData = JSON.parse(permanentUserData);
-                if (isActivated) {
-                    setTelegramUIState('activated', userData);
-                } else {
-                    setTelegramUIState('needs-activation', userData);
-                }
-            }
-            else {
-                setTelegramUIState('unbound');
-            }
-        }
-
+        // Initial check on page load.
+        checkAuthStatus();
     });
   </script>
 
