@@ -476,17 +476,17 @@
     });
   </script>
 window.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'telegram-auth') {
-        const data = event.data.data;
-        console.log('收到来自 callback 的消息:', data);
-        if (data && data.success) {
-            localStorage.setItem('telegram_auth_data', JSON.stringify(data.userData));
-            localStorage.removeItem('telegram_activated'); // 清除旧激活状态
-            checkAuthStatus(true); // 重新检查状态，弹出激活弹窗
-        } else {
-            showToast(data.error || '绑定失败，未知错误。');
-        }
+  if (event.data && event.data.type === 'telegram-auth') {
+    const data = event.data.data;
+    console.log('✅ 收到来自 callback 的消息:', data);
+    if (data && data.success) {
+      localStorage.setItem('telegram_auth_data', JSON.stringify(data.userData));
+      localStorage.removeItem('telegram_activated'); // 可选：第一次绑定清除激活状态
+      checkAuthStatus(true); // 更新 UI + 弹激活弹窗
+    } else {
+      showToast(data.error || '绑定失败，未知错误。');
     }
+  }
 });
 </body>
 </html>
