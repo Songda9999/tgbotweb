@@ -84,27 +84,21 @@
     .modal-overlay.show .modal-content {
         transform: scale(1);
     }
-    /* Action button style */
+    /* Action button style from screenshot */
     .action-btn {
         padding: 6px 16px;
-        border: 1px solid #e5e7eb;
+        border: 1px solid #e5e7eb; /* gray-200 */
         border-radius: 6px;
         font-size: 0.875rem;
         font-weight: 500;
-        color: #374151;
+        color: #374151; /* gray-700 */
         background-color: white;
         transition: background-color 0.2s;
+        white-space: nowrap;
+        cursor: pointer;
     }
     .action-btn:hover {
-        background-color: #f9fafb;
-    }
-    .action-btn-primary {
-        background-color: #eff6ff;
-        color: #2563eb;
-        border-color: #dbeafe;
-    }
-     .action-btn-primary:hover {
-        background-color: #dbeafe;
+        background-color: #f9fafb; /* gray-50 */
     }
   </style>
 </head>
@@ -126,152 +120,87 @@
   </div>
   <!-- END: Custom Modal -->
 
-  <div class="container mx-auto max-w-4xl p-4 md:p-8">
+  <div class="container mx-auto max-w-5xl p-4 md:p-8">
     
-    <!-- Account Verification Section -->
-    <section id="account-verification" class="mb-10">
-       <h2 class="text-xl font-semibold mb-4 text-gray-900">账号验证</h2>
-       <div class="bg-white p-2 md:p-6 rounded-xl border border-gray-200">
-          <!-- Email -->
-          <div class="flex flex-wrap items-center justify-between py-5 border-b border-gray-100">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="mail" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">邮箱</h3>
-                    <p class="text-sm text-gray-500 mt-1">用于登录、提币、安全设置时使用</p>
-                </div>
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900">账号验证</h2>
+    <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-200">
+        <!-- Email Item -->
+        <div class="flex flex-wrap items-center p-6">
+            <i data-feather="mail" class="w-6 h-6 text-gray-500"></i>
+            <div class="ml-4 flex-grow">
+                <h3 class="font-medium text-gray-800">邮箱</h3>
+                <p class="text-sm text-gray-500 mt-1">用于登录、提币、安全设置时使用</p>
             </div>
-            <div class="flex items-center space-x-6 w-full md:w-auto justify-end">
-                <div class="flex items-center text-green-600 text-sm font-medium">
-                     <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                     <span>d****@gmail.com</span>
-                </div>
-                <button class="action-btn">修改</button>
+            <div class="flex items-center text-orange-500 text-sm font-medium mx-6">
+                <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
+                <span>未设置</span>
             </div>
-          </div>
-          <!-- Phone Number -->
-          <div class="flex flex-wrap items-center justify-between py-5 border-b border-gray-100">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="smartphone" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">手机号</h3>
-                    <p class="text-sm text-gray-500 mt-1">用于提现、修改密码，安全设置时用以收取验证短信</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-6 w-full md:w-auto justify-end">
-                <div class="flex items-center text-green-600 text-sm font-medium">
-                     <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                     <span>***1467</span>
-                </div>
-                <div class="space-x-2">
-                    <button class="action-btn">修改</button>
-                    <button class="action-btn action-btn-primary">验证设定</button>
-                </div>
-            </div>
-          </div>
-          <!-- Telegram Verification (Dynamic) -->
-          <div id="telegram-row" class="flex flex-wrap items-center justify-between py-5 border-b border-gray-100 cursor-pointer">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="send" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">Telegram 验证</h3>
-                    <p class="text-sm text-gray-500 mt-1">用于接收实时通知和提现验证</p>
-                </div>
-            </div>
-            <div id="telegram-section" class="flex items-center space-x-6 w-full md:w-auto justify-end">
-              <!-- Status will be dynamically filled by JS -->
-            </div>
-          </div>
-          <!-- Google Authenticator -->
-          <div class="flex flex-wrap items-center justify-between py-5 border-b border-gray-100">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="shield" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">谷歌验证码</h3>
-                    <p class="text-sm text-gray-500 mt-1">用于提现、修改密码，安全设置时用以收取验证短信</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-6 w-full md:w-auto justify-end">
-                <div class="flex items-center text-green-600 text-sm font-medium">
-                     <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                     <span>已设置</span>
-                </div>
-                <button class="action-btn action-btn-primary">验证设定</button>
-            </div>
-          </div>
-          <!-- Identity Verification -->
-          <div class="flex flex-wrap items-center justify-between py-5 border-b border-gray-100">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="user" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">身份认证</h3>
-                    <p class="text-sm text-gray-500 mt-1">完成身份验证，享有最优级的身份权益</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-6 w-full md:w-auto justify-end">
-                <div class="flex items-center text-orange-500 text-sm font-medium">
-                     <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
-                     <span>请重新认证 L2</span>
-                </div>
-                <button class="action-btn action-btn-primary">查看权益</button>
-            </div>
-          </div>
-          <!-- Nationality -->
-          <div class="flex flex-wrap items-center justify-between py-5">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="globe" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">国籍</h3>
-                    <p class="text-sm text-gray-500 mt-1">您所使用的功能将受到国籍影响</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-6 w-full md:w-auto justify-end">
-                <div class="flex items-center text-green-600 text-sm font-medium">
-                     <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                     <span>其他地区</span>
-                </div>
-            </div>
-          </div>
-       </div>
-    </section>
+            <button class="action-btn">绑定</button>
+        </div>
 
-    <!-- Password Section -->
-    <section id="password">
-      <h2 class="text-xl font-semibold mb-4 text-gray-900">密码</h2>
-      <div class="bg-white p-2 md:p-6 rounded-xl border border-gray-200">
-        <!-- Login Password -->
-        <div class="flex flex-wrap items-center justify-between py-5 border-b border-gray-100">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="lock" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">登录密码</h3>
-                    <p class="text-sm text-gray-500 mt-1">请妥善保管您的登录密码</p>
-                </div>
+        <!-- Phone Number Item -->
+        <div class="flex flex-wrap items-center p-6">
+            <i data-feather="smartphone" class="w-6 h-6 text-gray-500"></i>
+            <div class="ml-4 flex-grow">
+                <h3 class="font-medium text-gray-800">手机号</h3>
+                <p class="text-sm text-gray-500 mt-1">用于提现、修改密码，安全设置时用以收取验证短信</p>
             </div>
-            <div class="flex items-center space-x-6 w-full md:w-auto justify-end">
-                <span class="text-sm text-gray-500">l**</span>
+            <div class="flex items-center text-green-600 text-sm font-medium mx-6">
+                <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
+                <span>**7259</span>
+            </div>
+            <div class="flex space-x-2">
                 <button class="action-btn">修改</button>
+                <button class="action-btn">验证设定</button>
             </div>
         </div>
-        <!-- Fund Password -->
-        <div class="flex flex-wrap items-center justify-between py-5">
-            <div class="flex items-center mb-3 md:mb-0">
-                <i data-feather="credit-card" class="w-6 h-6 text-gray-400 mr-4"></i>
-                <div>
-                    <h3 class="text-base font-medium">资金密码</h3>
-                    <p class="text-sm text-gray-500 mt-1">为确保您的资金安全请设置资金密码</p>
-                </div>
+
+        <!-- Telegram Verification (Dynamic) -->
+        <div id="telegram-row" class="flex flex-wrap items-center p-6">
+            <!-- This content will be generated by JavaScript -->
+        </div>
+
+        <!-- Google Authenticator Item -->
+        <div class="flex flex-wrap items-center p-6">
+            <i data-feather="shield" class="w-6 h-6 text-gray-500"></i>
+            <div class="ml-4 flex-grow">
+                <h3 class="font-medium text-gray-800">谷歌验证码</h3>
+                <p class="text-sm text-gray-500 mt-1">用于提现、修改密码，安全设置时用以收取验证短信</p>
             </div>
-            <div class="flex items-center space-x-6 w-full md:w-auto justify-end">
-                <div class="flex items-center text-green-600 text-sm font-medium">
-                     <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                     <span>已设置</span>
-                </div>
-                <button class="action-btn">修改</button>
+            <div class="flex items-center text-orange-500 text-sm font-medium mx-6">
+                <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
+                <span>未设置</span>
+            </div>
+            <button class="action-btn">绑定</button>
+        </div>
+
+        <!-- Identity Verification Item -->
+        <div class="flex flex-wrap items-center p-6">
+            <i data-feather="user" class="w-6 h-6 text-gray-500"></i>
+            <div class="ml-4 flex-grow">
+                <h3 class="font-medium text-gray-800">身份认证</h3>
+                <p class="text-sm text-gray-500 mt-1">完成身份验证，享有最优级的身份权益</p>
+            </div>
+            <div class="flex items-center text-teal-500 text-sm font-medium mx-6">
+                 <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
+                <span>L2 认证会员</span>
+            </div>
+            <button class="action-btn">查看权益</button>
+        </div>
+
+        <!-- Nationality Item -->
+        <div class="flex flex-wrap items-center p-6">
+            <i data-feather="globe" class="w-6 h-6 text-gray-500"></i>
+            <div class="ml-4 flex-grow">
+                <h3 class="font-medium text-gray-800">国籍</h3>
+                <p class="text-sm text-gray-500 mt-1">您所使用的功能将受到国籍影响</p>
+            </div>
+            <div class="flex items-center text-teal-500 text-sm font-medium mx-6">
+                <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
+                <span>其他地区</span>
             </div>
         </div>
-      </div>
-    </section>
+    </div>
   </div>
 
   <script type="text/javascript">
@@ -285,11 +214,11 @@
         const BOT_USERNAME = "Songdacheckbalance_bot";
         const AUTH_DATA_KEY = 'telegram_auth_data';
         const ACTIVATED_KEY = 'telegram_activated';
+        const ACTIVATION_PENDING_KEY = 'activation_pending';
 
         // =================================================================
         // Get DOM Elements
         // =================================================================
-        const telegramSection = document.getElementById('telegram-section');
         const telegramRow = document.getElementById('telegram-row');
         const toast = document.getElementById('toast');
         const modal = document.getElementById('custom-modal');
@@ -338,32 +267,46 @@
 
         function setTelegramUIState(state, userData = null, showActivationModal = false) {
             let statusHTML = '';
-            telegramRow.onclick = null;
-
+            telegramRow.innerHTML = ''; // Clear previous content
+            
             let displayName = '';
             if (userData) {
                 displayName = userData.username ? `@${userData.username}` : `${userData.first_name}${userData.last_name ? ' ' + userData.last_name : ''}`;
             }
             
+            const baseHTML = `
+                <i data-feather="send" class="w-6 h-6 text-gray-500"></i>
+                <div class="ml-4 flex-grow">
+                    <h3 class="font-medium text-gray-800">Telegram 验证</h3>
+                    <p class="text-sm text-gray-500 mt-1">用于接收实时通知和提现验证</p>
+                </div>
+            `;
+
             switch (state) {
                 case 'unbound':
-                    statusHTML = `<button class="action-btn action-btn-primary">绑定</button>`;
-                    telegramRow.onclick = bindTelegram;
+                    statusHTML = `
+                        ${baseHTML}
+                        <div class="flex items-center text-orange-500 text-sm font-medium mx-6">
+                            <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
+                            <span>未设置</span>
+                        </div>
+                        <button id="telegram-bind-btn" class="action-btn">绑定</button>
+                    `;
                     break;
                 case 'needs-activation':
                     statusHTML = `
-                         <div class="flex items-center text-yellow-500 text-sm font-medium">
-                             <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
-                             <span>待激活</span>
+                        ${baseHTML}
+                        <div class="flex items-center text-yellow-500 text-sm font-medium mx-6">
+                            <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
+                            <span>待激活</span>
                         </div>
-                        <button class="action-btn action-btn-primary">激活</button>
+                        <button id="telegram-activate-btn" class="action-btn">激活</button>
                     `;
-                    const activationAction = () => {
-                        window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
-                    };
-                    telegramRow.onclick = activationAction;
-                    
                     if (showActivationModal) {
+                        const activationAction = () => {
+                            localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
+                            window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
+                        };
                         showModal(
                             '需要激活',
                             '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。',
@@ -375,20 +318,41 @@
                     break;
                 case 'activated':
                     statusHTML = `
-                        <div class="flex items-center text-green-600 text-sm font-medium">
-                             <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                             <span>${displayName}</span>
+                        ${baseHTML}
+                        <div class="flex items-center text-green-600 text-sm font-medium mx-6">
+                            <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
+                            <span>${displayName}</span>
                         </div>
-                        <button class="action-btn">解绑</button>
+                        <button id="telegram-unlink-btn" class="action-btn">解绑</button>
                     `;
-                    telegramRow.onclick = unlinkTelegram;
                     break;
                 case 'loading':
                     statusHTML = `<div class="spinner"></div>`;
                     break;
             }
-            telegramSection.innerHTML = statusHTML;
+            telegramRow.innerHTML = statusHTML;
             feather.replace();
+            attachTelegramButtonListeners();
+        }
+
+        function attachTelegramButtonListeners() {
+            const bindBtn = document.getElementById('telegram-bind-btn');
+            if (bindBtn) {
+                bindBtn.addEventListener('click', bindTelegram);
+            }
+
+            const activateBtn = document.getElementById('telegram-activate-btn');
+            if (activateBtn) {
+                activateBtn.addEventListener('click', () => {
+                    localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
+                    window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
+                });
+            }
+
+            const unlinkBtn = document.getElementById('telegram-unlink-btn');
+            if (unlinkBtn) {
+                unlinkBtn.addEventListener('click', unlinkTelegram);
+            }
         }
 
         function bindTelegram() {
@@ -402,7 +366,7 @@
 
           const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
           
-          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600');
+          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600,noopener,noreferrer');
         }
 
         function checkAuthStatus(showActivationModal = false) {
@@ -457,37 +421,23 @@
         // Event Listeners
         // =================================================================
         
-        // When user activates in Telegram and comes back, this will trigger.
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                const permanentData = localStorage.getItem(AUTH_DATA_KEY);
-                const isActivated = localStorage.getItem(ACTIVATED_KEY) === 'true';
-                // If data exists but not activated, we assume they might have just activated.
-                if (permanentData && !isActivated) {
-                    // This is a simple way to check. A more robust way is a server check.
-                    // For now, we'll assume they did it and update the UI.
-                    completeActivation();
-                }
+        function handleFocusAndVisibility() {
+            if (localStorage.getItem(ACTIVATION_PENDING_KEY) === 'true') {
+                localStorage.removeItem(ACTIVATION_PENDING_KEY);
+                completeActivation();
+            } else {
+                // This part is handled by the handleTelegramAuth function now.
+                // We can keep a simple check here as a fallback.
+                checkAuthStatus();
             }
-        });
+        }
 
+        window.addEventListener('focus', handleFocusAndVisibility);
+        
         // Initial check on page load.
         checkAuthStatus();
     });
   </script>
-window.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'telegram-auth') {
-    const data = event.data.data;
-    console.log('✅ 收到来自 callback 的消息:', data);
-    if (data && data.success) {
-      localStorage.setItem('telegram_auth_data', JSON.stringify(data.userData));
-      localStorage.removeItem('telegram_activated'); // 可选：第一次绑定清除激活状态
-      checkAuthStatus(true); // 更新 UI + 弹激活弹窗
-    } else {
-      showToast(data.error || '绑定失败，未知错误。');
-    }
-  }
-});
-    </script>
+
 </body>
 </html>
