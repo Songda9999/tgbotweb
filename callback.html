@@ -47,17 +47,21 @@
                     // Set the temporary success key for the main window to find.
                     localStorage.setItem('telegram_auth_success', JSON.stringify(tgAuthData));
                 } else {
+                    const errorMsg = "缺少必要参数，授权失败。";
                     console.error("Telegram authentication failed: Missing required parameters.");
-                    document.body.innerHTML = '<div><h2>授权失败</h2><p>缺少必要参数，请重试。</p></div>';
+                    localStorage.setItem('telegram_auth_fail', errorMsg);
+                    document.body.innerHTML = `<div><h2>授权失败</h2><p>${errorMsg}</p></div>`;
                 }
             } catch (error) {
+                const errorMsg = "处理授权信息时发生错误。";
                 console.error("Error processing callback:", error);
-                document.body.innerHTML = '<div><h2>处理出错</h2><p>处理授权信息时发生错误。</p></div>';
+                localStorage.setItem('telegram_auth_fail', errorMsg);
+                document.body.innerHTML = `<div><h2>处理出错</h2><p>${errorMsg}</p></div>`;
             } finally {
                 // Close the popup window after a short delay.
                 setTimeout(() => {
                     window.close();
-                }, 1000);
+                }, 1500); // Increased delay slightly to allow user to see message.
             }
         };
     </script>
