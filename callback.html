@@ -22,50 +22,47 @@
         <h2>正在处理授权...</h2>
         <p>此窗口将自动关闭。</p>
     </div>
-    <script>
-        window.onload = function() {
-            let response = { success: false, error: '未知错误' };
-            try {
-                const hashParams = new URLSearchParams(window.location.hash.substring(1));
-                const tgAuthData = {};
-                const requiredKeys = ['id', 'first_name', 'auth_date', 'hash'];
-                let hasAllKeys = true;
+<script>
+window.onload = function () {
+  let response = { success: false, error: '未知错误' };
 
-                requiredKeys.forEach(key => {
-                    const value = hashParams.get(key);
-                    if (value) {
-                        tgAuthData[key] = value;
-                    } else {
-                        hasAllKeys = false;
-                    }
-                });
+  try {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const tgAuthData = {};
+    const requiredKeys = ['id', 'first_name', 'auth_date', 'hash'];
+    let hasAllKeys = true;
 
-                if (hasAllKeys) {
-                    // Prepare success response
-                    response = { success: true, userData: tgAuthData };
-                    document.body.innerHTML = '<div><h2>授权成功！</h2><p>此窗口将自动关闭。</p></div>';
-                } else {
-                    response.error = "缺少必要参数，授权失败。";
-                    console.error("Telegram authentication failed: Missing required parameters.");
-                    document.body.innerHTML = `<div><h2>授权失败</h2><p>${response.error}</p></div>`;
-                }
-            } catch (error) {
-                response.error = "处理授权信息时发生错误。";
-                console.error("Error processing callback:", error);
-                document.body.innerHTML = `<div><h2>处理出错</h2><p>${response.error}</p></div>`;
-            } finally {
-                // Use the "messenger" to send data back to the main window
-                if (window.opener) {
-    console.log('使用 postMessage 通知 index.html 页面:', response);
-    window.opener.postMessage({ type: 'telegram-auth', data: response }, '*');
+    requiredKeys.forEach(key => {
+      const value = hashParams.get(key);
+      if (value) {
+        tgAuthData[key] = value;
+      } else {
+        hasAllKeys = false;
+      }
+    });
+
+    if (hasAllKeys) {
+      response = { success: true, userData: tgAuthData };
+      document.body.innerHTML = '<div><h2>授权成功!</h2><p>此窗口将自动关闭。</p></div>';
+    } else {
+      response.error = '缺少必要参数，授权失败';
+      document.body.innerHTML = `<div><h2>授权失败</h2><p>${response.error}</p></div>`;
+    }
+  } catch (e) {
+    response.error = '处理授权数据时出错';
+    document.body.innerHTML = `<div><h2>授权异常</h2><p>${response.error}</p></div>`;
+  } finally {
+    // 发消息给 opener 页面
+    if (window.opener) {
+      console.log('使用 postMessage 通知 index 页面:', response);
+      window.opener.postMessage({ type: 'telegram-auth', data: response }, '*');
+    } else {
+      console.warn('window.opener 不存在，无法回传数据');
+    }
+
+    setTimeout(() => window.close(), 1500);
+  }
 }
-                
-                // Close the popup window after a short delay.
-                setTimeout(() => {
-                    window.close();
-                }, 1500);
-            }
-        };
-    </script>
+</script>
 </body>
 </html>
