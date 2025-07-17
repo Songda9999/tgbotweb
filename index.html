@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>账号验证</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <!-- Tailwind CSS for modern styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Inter -->
@@ -13,93 +14,17 @@
   <!-- Feather Icons for better iconography -->
   <script src="https://unpkg.com/feather-icons"></script>
   <style>
-    /* Custom Styles */
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-    }
-    /* Loading Spinner */
-    .spinner {
-      border: 2px solid rgba(0, 0, 0, 0.1);
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border-left-color: #495057;
-      animation: spin 1s ease infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    /* Custom Toast Notification Style */
-    #toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      transform: translateX(0);
-      left: auto;
-      padding: 12px 24px;
-      border-radius: 8px;
-      color: white;
-      background-color: rgba(0, 0, 0, 0.8);
-      font-weight: 500;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
-    }
-    #toast.show {
-      opacity: 1;
-      visibility: visible;
-    }
-    /* Custom Modal Styles */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 2000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s, visibility 0.3s;
-    }
-    .modal-overlay.show {
-        opacity: 1;
-        visibility: visible;
-    }
-    .modal-content {
-        background: white;
-        padding: 24px;
-        border-radius: 16px;
-        width: 90%;
-        max-width: 400px;
-        transform: scale(0.95);
-        transition: transform 0.3s;
-    }
-    .modal-overlay.show .modal-content {
-        transform: scale(1);
-    }
-    /* Action button style from screenshot */
-    .action-btn {
-        padding: 6px 16px;
-        border: 1px solid #e5e7eb; /* gray-200 */
-        border-radius: 6px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151; /* gray-700 */
-        background-color: white;
-        transition: background-color 0.2s;
-        white-space: nowrap;
-        cursor: pointer;
-    }
-    .action-btn:hover {
-        background-color: #f9fafb; /* gray-50 */
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #f9fafb; }
+    .spinner { border: 2px solid rgba(0, 0, 0, 0.1); width: 20px; height: 20px; border-radius: 50%; border-left-color: #495057; animation: spin 1s ease infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; border-radius: 8px; color: white; background-color: rgba(0, 0, 0, 0.8); font-weight: 500; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    #toast.show { opacity: 1; visibility: visible; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; }
+    .modal-overlay.show { opacity: 1; visibility: visible; }
+    .modal-content { background: white; padding: 24px; border-radius: 16px; width: 90%; max-width: 400px; transform: scale(0.95); transition: transform 0.3s; }
+    .modal-overlay.show .modal-content { transform: scale(1); }
+    .action-btn { padding: 6px 16px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 0.875rem; font-weight: 500; color: #374151; background-color: white; transition: background-color 0.2s; white-space: nowrap; cursor: pointer; }
+    .action-btn:hover { background-color: #f9fafb; }
   </style>
 </head>
 <body class="text-gray-800">
@@ -121,10 +46,9 @@
   <!-- END: Custom Modal -->
 
   <div class="container mx-auto max-w-5xl p-4 md:p-8">
-    
     <h2 class="text-2xl font-semibold mb-6 text-gray-900">账号验证</h2>
     <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-200">
-        <!-- Email Item -->
+        <!-- Static Items... -->
         <div class="flex flex-wrap items-center p-6">
             <i data-feather="mail" class="w-6 h-6 text-gray-500"></i>
             <div class="ml-4 flex-grow">
@@ -137,8 +61,6 @@
             </div>
             <button class="action-btn">绑定</button>
         </div>
-
-        <!-- Phone Number Item -->
         <div class="flex flex-wrap items-center p-6">
             <i data-feather="smartphone" class="w-6 h-6 text-gray-500"></i>
             <div class="ml-4 flex-grow">
@@ -154,71 +76,23 @@
                 <button class="action-btn">验证设定</button>
             </div>
         </div>
-
         <!-- Telegram Verification (Dynamic) -->
         <div id="telegram-row" class="flex flex-wrap items-center p-6">
             <!-- This content will be generated by JavaScript -->
         </div>
-
-        <!-- Google Authenticator Item -->
-        <div class="flex flex-wrap items-center p-6">
-            <i data-feather="shield" class="w-6 h-6 text-gray-500"></i>
-            <div class="ml-4 flex-grow">
-                <h3 class="font-medium text-gray-800">谷歌验证码</h3>
-                <p class="text-sm text-gray-500 mt-1">用于提现、修改密码，安全设置时用以收取验证短信</p>
-            </div>
-            <div class="flex items-center text-orange-500 text-sm font-medium mx-6">
-                <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
-                <span>未设置</span>
-            </div>
-            <button class="action-btn">绑定</button>
-        </div>
-
-        <!-- Identity Verification Item -->
-        <div class="flex flex-wrap items-center p-6">
-            <i data-feather="user" class="w-6 h-6 text-gray-500"></i>
-            <div class="ml-4 flex-grow">
-                <h3 class="font-medium text-gray-800">身份认证</h3>
-                <p class="text-sm text-gray-500 mt-1">完成身份验证，享有最优级的身份权益</p>
-            </div>
-            <div class="flex items-center text-teal-500 text-sm font-medium mx-6">
-                 <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                <span>L2 认证会员</span>
-            </div>
-            <button class="action-btn">查看权益</button>
-        </div>
-
-        <!-- Nationality Item -->
-        <div class="flex flex-wrap items-center p-6">
-            <i data-feather="globe" class="w-6 h-6 text-gray-500"></i>
-            <div class="ml-4 flex-grow">
-                <h3 class="font-medium text-gray-800">国籍</h3>
-                <p class="text-sm text-gray-500 mt-1">您所使用的功能将受到国籍影响</p>
-            </div>
-            <div class="flex items-center text-teal-500 text-sm font-medium mx-6">
-                <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                <span>其他地区</span>
-            </div>
-        </div>
+        <!-- More Static Items... -->
     </div>
   </div>
 
   <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Icon Initialization ---
         feather.replace();
 
-        // =================================================================
-        // Configuration
-        // =================================================================
         const BOT_USERNAME = "Songdacheckbalance_bot";
         const AUTH_DATA_KEY = 'telegram_auth_data';
         const ACTIVATED_KEY = 'telegram_activated';
         const ACTIVATION_PENDING_KEY = 'activation_pending';
 
-        // =================================================================
-        // Get DOM Elements
-        // =================================================================
         const telegramRow = document.getElementById('telegram-row');
         const toast = document.getElementById('toast');
         const modal = document.getElementById('custom-modal');
@@ -227,9 +101,6 @@
         const modalConfirmBtn = document.getElementById('modal-confirm-btn');
         const modalCancelBtn = document.getElementById('modal-cancel-btn');
 
-        // =================================================================
-        // Modal & Toast Logic (UI Helpers)
-        // =================================================================
         let confirmCallback = null;
 
         function showModal(title, message, confirmText = '确认', cancelText = '取消', onConfirm) {
@@ -261,13 +132,9 @@
             setTimeout(() => { toast.classList.remove('show'); }, 2500);
         }
 
-        // =================================================================
-        // Core Application Logic
-        // =================================================================
-
         function setTelegramUIState(state, userData = null, showActivationModal = false) {
             let statusHTML = '';
-            telegramRow.innerHTML = ''; // Clear previous content
+            telegramRow.innerHTML = ''; 
             
             let displayName = '';
             if (userData) {
@@ -284,50 +151,23 @@
 
             switch (state) {
                 case 'unbound':
-                    statusHTML = `
-                        ${baseHTML}
-                        <div class="flex items-center text-orange-500 text-sm font-medium mx-6">
-                            <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
-                            <span>未设置</span>
-                        </div>
-                        <button id="telegram-bind-btn" class="action-btn">绑定</button>
-                    `;
+                    statusHTML = `${baseHTML}<div class="flex items-center text-orange-500 text-sm font-medium mx-6"><i data-feather="alert-circle" class="w-4 h-4 mr-2"></i><span>未设置</span></div><button id="telegram-bind-btn" class="action-btn">绑定</button>`;
                     break;
                 case 'needs-activation':
-                    statusHTML = `
-                        ${baseHTML}
-                        <div class="flex items-center text-yellow-500 text-sm font-medium mx-6">
-                            <i data-feather="alert-circle" class="w-4 h-4 mr-2"></i>
-                            <span>待激活</span>
-                        </div>
-                        <button id="telegram-activate-btn" class="action-btn">激活</button>
-                    `;
+                    statusHTML = `${baseHTML}<div class="flex items-center text-yellow-500 text-sm font-medium mx-6"><i data-feather="alert-circle" class="w-4 h-4 mr-2"></i><span>待激活</span></div><button id="telegram-activate-btn" class="action-btn">激活</button>`;
                     if (showActivationModal) {
                         const activationAction = () => {
                             localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
                             window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
                         };
-                        showModal(
-                            '需要激活',
-                            '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。',
-                            '前往激活',
-                            '稍后',
-                            activationAction
-                        );
+                        showModal('需要激活', '绑定成功！请前往 Telegram 完成最后一步验证以激活功能。', '前往激活', '稍后', activationAction);
                     }
                     break;
                 case 'activated':
-                    statusHTML = `
-                        ${baseHTML}
-                        <div class="flex items-center text-green-600 text-sm font-medium mx-6">
-                            <i data-feather="check-circle" class="w-4 h-4 mr-2"></i>
-                            <span>${displayName}</span>
-                        </div>
-                        <button id="telegram-unlink-btn" class="action-btn">解绑</button>
-                    `;
+                    statusHTML = `${baseHTML}<div class="flex items-center text-green-600 text-sm font-medium mx-6"><i data-feather="check-circle" class="w-4 h-4 mr-2"></i><span>${displayName}</span></div><button id="telegram-unlink-btn" class="action-btn">解绑</button>`;
                     break;
-                case 'loading':
-                    statusHTML = `<div class="spinner"></div>`;
+                default:
+                    statusHTML = `${baseHTML}<div class="spinner"></div>`;
                     break;
             }
             telegramRow.innerHTML = statusHTML;
@@ -337,37 +177,29 @@
 
         function attachTelegramButtonListeners() {
             const bindBtn = document.getElementById('telegram-bind-btn');
-            if (bindBtn) {
-                bindBtn.addEventListener('click', bindTelegram);
-            }
+            if (bindBtn) bindBtn.addEventListener('click', bindTelegram);
 
             const activateBtn = document.getElementById('telegram-activate-btn');
-            if (activateBtn) {
-                activateBtn.addEventListener('click', () => {
-                    localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
-                    window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
-                });
-            }
+            if (activateBtn) activateBtn.addEventListener('click', () => {
+                localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
+                window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
+            });
 
             const unlinkBtn = document.getElementById('telegram-unlink-btn');
-            if (unlinkBtn) {
-                unlinkBtn.addEventListener('click', unlinkTelegram);
-            }
+            if (unlinkBtn) unlinkBtn.addEventListener('click', unlinkTelegram);
         }
 
         function bindTelegram() {
           const botId = '8087175912';
           const origin = encodeURIComponent(window.location.origin);
-          
           const currentPath = window.location.pathname;
           const directoryPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
           const returnToUrl = `${window.location.origin}${directoryPath}/callback.html`;
           const returnTo = encodeURIComponent(returnToUrl);
-
           const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
           
-          // **FIXED**: Removed 'noopener' to allow communication from the popup.
-          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600,noreferrer');
+          // **CRITICAL FIX**: Removed 'noopener' and 'noreferrer' to allow communication.
+          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600');
         }
 
         function checkAuthStatus(showActivationModal = false) {
@@ -375,7 +207,6 @@
             if (permanentAuthDataString) {
                 const userData = JSON.parse(permanentAuthDataString);
                 const isActivated = localStorage.getItem(ACTIVATED_KEY) === 'true';
-
                 if (isActivated) {
                     setTelegramUIState('activated', userData);
                 } else {
@@ -393,48 +224,33 @@
         }
 
         function unlinkTelegram() {
-            showModal(
-                '解除关联',
-                '您确定要解除与 Telegram 账户的关联吗？',
-                '确定解绑',
-                '取消',
-                () => {
-                    localStorage.removeItem(AUTH_DATA_KEY);
-                    localStorage.removeItem(ACTIVATED_KEY);
-                    checkAuthStatus();
-                    showToast('已解除关联');
-                }
-            );
+            showModal('解除关联', '您确定要解除与 Telegram 账户的关联吗？', '确定解绑', '取消', () => {
+                localStorage.removeItem(AUTH_DATA_KEY);
+                localStorage.removeItem(ACTIVATED_KEY);
+                checkAuthStatus();
+                showToast('已解除关联');
+            });
         }
 
         // This is the "messenger" function that the popup will call.
         window.handleTelegramAuth = function(data) {
             if (data && data.success) {
                 localStorage.setItem(AUTH_DATA_KEY, JSON.stringify(data.userData));
-                localStorage.removeItem(ACTIVATED_KEY); // Reset activation status
-                checkAuthStatus(true); // Re-check status and show modal
+                localStorage.removeItem(ACTIVATED_KEY);
+                checkAuthStatus(true);
             } else {
                 showToast(data.error || '绑定失败，未知错误。');
             }
         };
-
-        // =================================================================
-        // Event Listeners
-        // =================================================================
         
-        function handleFocusAndVisibility() {
+        // This listener handles the return from the activation tab.
+        window.addEventListener('focus', () => {
             if (localStorage.getItem(ACTIVATION_PENDING_KEY) === 'true') {
                 localStorage.removeItem(ACTIVATION_PENDING_KEY);
                 completeActivation();
             }
-            // No need to call checkAuthStatus() here anymore,
-            // as the primary communication is now through handleTelegramAuth.
-            // This listener is now only for the activation flow.
-        }
-
-        window.addEventListener('focus', handleFocusAndVisibility);
+        });
         
-        // Initial check on page load.
         checkAuthStatus();
     });
   </script>
