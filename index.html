@@ -286,6 +286,7 @@
         const AUTH_SUCCESS_KEY = 'telegram_auth_success'; // Temporary key from callback
         const AUTH_DATA_KEY = 'telegram_auth_data';       // Permanent key for user data
         const ACTIVATED_KEY = 'telegram_activated';       // Activation flag
+        const ACTIVATION_PENDING_KEY = 'activation_pending'; // Flag for activation attempt
 
         // =================================================================
         // Get DOM Elements
@@ -360,6 +361,7 @@
                         <button class="action-btn action-btn-primary">激活</button>
                     `;
                     const activationAction = () => {
+                        localStorage.setItem(ACTIVATION_PENDING_KEY, 'true');
                         window.open(`https://t.me/${BOT_USERNAME.replace('@', '')}?start=activate`, '_blank');
                     };
                     telegramRow.onclick = activationAction;
@@ -462,21 +464,24 @@
         // =================================================================
         // Event Listeners
         // =================================================================
-        window.addEventListener('focus', checkAuthStatus);
+        
+        // This listener checks for status changes when the user returns to the tab.
+        function handleFocusAndVisibility() {
+            // Check if user was trying to activate
+            if (localStorage.getItem(ACTIVATION_PENDING_KEY) === 'true') {
+                localStorage.removeItem(ACTIVATION_PENDING_KEY);
+                completeActivation();
+            } else {
+                // Check for new binding information from the popup
+                checkAuthStatus();
+            }
+        }
+
+        window.addEventListener('focus', handleFocusAndVisibility);
         
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                // When user activates in Telegram and comes back, this will trigger.
-                // We check if the permanent data exists, and if the activated flag is now set.
-                const permanentData = localStorage.getItem(AUTH_DATA_KEY);
-                if(permanentData && localStorage.getItem(ACTIVATED_KEY) !== 'true') {
-                    // This is a simple trick: we assume if the user comes back to the visible tab,
-                    // they have likely completed the action. We can then mark it as activated.
-                    // A more robust solution would involve server-side validation.
-                    completeActivation();
-                } else {
-                    checkAuthStatus();
-                }
+                handleFocusAndVisibility();
             }
         });
 
