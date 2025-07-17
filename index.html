@@ -402,7 +402,7 @@
 
           const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
           
-          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600,noopener,noreferrer');
+          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600');
         }
 
         function checkAuthStatus(showActivationModal = false) {
