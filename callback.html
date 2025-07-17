@@ -41,7 +41,7 @@
             } catch (error) {
                 response.error = error.message || "处理授权信息时发生错误。";
                 console.error("Callback Error:", response.error);
-                document.body.innerHTML = `<div><h2 class="error">授权失败</h2><p>${response.error}</p></div>`;
+                document.body.innerHTML = <div><h2 class="error">授权失败</h2><p>${response.error}</p></div>;
             } finally {
                 // **CRITICAL FIX**: Check if the messenger function exists on the opener window.
                 if (window.opener && window.opener.handleTelegramAuth) {
