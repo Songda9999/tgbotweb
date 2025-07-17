@@ -55,9 +55,10 @@
                 document.body.innerHTML = `<div><h2>处理出错</h2><p>${response.error}</p></div>`;
             } finally {
                 // Use the "messenger" to send data back to the main window
-                if (window.opener && window.opener.handleTelegramAuth) {
-                    window.opener.handleTelegramAuth(response);
-                }
+                if (window.opener) {
+    console.log('使用 postMessage 通知 index.html 页面:', response);
+    window.opener.postMessage({ type: 'telegram-auth', data: response }, '*');
+}
                 
                 // Close the popup window after a short delay.
                 setTimeout(() => {
