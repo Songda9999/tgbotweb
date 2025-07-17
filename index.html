@@ -366,7 +366,8 @@
 
           const authUrl = `https://oauth.telegram.org/auth?bot_id=${botId}&origin=${origin}&return_to=${returnTo}&request_access=write&rnd=${Date.now()}`;
           
-          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600,noopener,noreferrer');
+          // **FIXED**: Removed 'noopener' to allow communication from the popup.
+          window.open(authUrl, 'telegramAuthPopup', 'width=500,height=600,noreferrer');
         }
 
         function checkAuthStatus(showActivationModal = false) {
@@ -425,11 +426,10 @@
             if (localStorage.getItem(ACTIVATION_PENDING_KEY) === 'true') {
                 localStorage.removeItem(ACTIVATION_PENDING_KEY);
                 completeActivation();
-            } else {
-                // This part is handled by the handleTelegramAuth function now.
-                // We can keep a simple check here as a fallback.
-                checkAuthStatus();
             }
+            // No need to call checkAuthStatus() here anymore,
+            // as the primary communication is now through handleTelegramAuth.
+            // This listener is now only for the activation flow.
         }
 
         window.addEventListener('focus', handleFocusAndVisibility);
